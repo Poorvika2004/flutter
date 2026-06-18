@@ -1,0 +1,64 @@
+.import 'package:flutter/material.dart';
+12.import 'package:fl_chart/fl_chart.dart';
+13.
+14.void main() => runApp(
+15. const MaterialApp(home: ExpenseApp(), debugShowCheckedModeBanner:
+false));
+16.
+17.class ExpenseApp extends StatefulWidget {
+18. const ExpenseApp({super.key});
+19. @override
+20. State<ExpenseApp> createState() => _ExpenseAppState();
+21.}
+22.
+23.class _ExpenseAppState extends State<ExpenseApp> {
+24. final _catCtrl = TextEditingController();
+25. final _amtCtrl = TextEditingController();
+26. final _data = <Map<String, dynamic>>[];
+27. final _colors = [Colors.red, Colors.green, Colors.blue, Colors.orange];
+28.
+29. void _add() {
+30. final c = _catCtrl.text.trim(), a = double.tryParse(_amtCtrl.text);
+31. if (c.isNotEmpty && a != null) {
+32. setState(() {
+33. _data.add({
+34. 'cat': c,
+35. 'amt': a,
+36. 'clr': _colors[_data.length % _colors.length]
+37. });
+38. _catCtrl.clear();
+39. _amtCtrl.clear();
+40. });
+41. }
+42. }
+43.
+44. @override
+45. Widget build(BuildContext ctx) => Scaffold(
+46. appBar: AppBar(title: const Text('Expense Tracker')),
+47. body: Padding(
+ padding: const EdgeInsets.all(12),
+ child: Column(children: [
+ TextField(
+ controller: _catCtrl,
+ decoration: const InputDecoration(labelText: 'Category')),
+ TextField(
+ controller: _amtCtrl,
+ decoration: const InputDecoration(labelText: 'Amount'),
+ keyboardType: TextInputType.number),
+ ElevatedButton(onPressed: _add, child: const Text('Add')),
+ const SizedBox(height: 10),
+ Expanded(
+ child: _data.isEmpty
+ ? const Text('No data')
+ : PieChart(PieChartData(
+ sections: _data
+ .map((e) => PieChartSectionData(
+ value: e['amt'],
+ color: e['clr'],
+ title: e['cat'],
+ radius: 60,
+ titleStyle: const TextStyle(
+ fontSize: 12, color: Colors.white)))
+ toList())))
+ ])));
+}
